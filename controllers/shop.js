@@ -6,9 +6,6 @@ exports.getProducts = (req, res) => {
       prods: products,
       pageTitle: 'All Products',
       path: '/products',
-      hasProducts: products.length > 0,
-      activeShop: true,
-      productCSS: true,
     });
   });
 };
@@ -27,6 +24,13 @@ exports.getCart = (req, res) => {
   res.render('shop/cart', {
     pageTitle: 'Your Cart',
     path: '/cart',
+  });
+};
+
+exports.getOrders = (req, res) => {
+  res.render('shop/orders', {
+    pageTitle: 'Your Orders',
+    path: '/orders',
   });
 };
 
