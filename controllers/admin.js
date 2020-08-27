@@ -1,4 +1,6 @@
+const mongodb = require('mongodb');
 const Product = require('../models/product');
+const ObjectID = mongodb.ObjectID;
 
 exports.getAddProduct = (req, res, next) => {
   res.render('admin/edit-product', {
@@ -47,21 +49,22 @@ exports.postEditProduct = (req, res, next) => {
   const updatedPrice = req.body.price;
   const updatedImageUrl = req.body.imageUrl;
   const updatedDesc = req.body.description;
-  Product.findByPk(prodId)
-    .then((product) => {
-      product.title = updatedTitle;
-      product.price = updatedPrice;
-      product.description = updatedDesc;
-      product.imageUrl = updatedImageUrl;
-      return product.save(); //updated product in database if product not exists -> created new one, else overwrite last one
-    })
+  const product = new Product(
+    updatedTitle,
+    updatedPrice,
+    updatedDesc,
+    updatedImageUrl,
+    new ObjectID(prodId),
+  );
+  product
+    .save()
     .then((result) => {
       console.log('Updated Product');
       res.redirect('/admin/products');
     })
     .catch((err) => console.log(err));
 };
-//
+
 exports.getProducts = (req, res, next) => {
   Product.fetchAll()
     .then((products) =>
@@ -73,15 +76,12 @@ exports.getProducts = (req, res, next) => {
     )
     .catch((err) => console.log(err));
 };
-//
-// exports.postDeleteProduct = (req, res, next) => {
-//   const prodId = req.body.productId;
-//   Product.findByPk(prodId)
-//     .then((product) => {
-//       return product.destroy(); // delete product
-//     })
-//     .then(() => {
-//       res.redirect('/admin/products');
-//     })
-//     .catch((err) => console.log(err));
-// };
+
+exports.postDeleteProduct = (req, res, next) => {
+  const prodId = req.body.productId;
+  Product.deleteById(prodId)
+    .then(() => {
+      res.redirect('/admin/products');
+    })
+    .catch((err) => console.log(err));
+};
