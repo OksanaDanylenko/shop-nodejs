@@ -1,8 +1,8 @@
 const Product = require('../models/product');
-const Order = require('../models/order');
+// const Order = require('../models/order');
 
 exports.getProducts = (req, res, next) => {
-  Product.fetchAll()
+  Product.find() //find by mongoose give all products (here we can call cursor method)
     .then((products) =>
       res.render('shop/product-list', {
         prods: products,
@@ -15,7 +15,7 @@ exports.getProducts = (req, res, next) => {
 
 exports.getProduct = (req, res, next) => {
   const prodId = req.params.productId;
-  Product.findById(prodId)
+  Product.findById(prodId) //findById - create object from string that past by itself
     .then((product) =>
       res.render('shop/product-detail', {
         product: product,
@@ -27,7 +27,7 @@ exports.getProduct = (req, res, next) => {
 };
 
 exports.getIndex = (req, res, next) => {
-  Product.fetchAll()
+  Product.find()
     .then((products) =>
       res.render('shop/index', {
         prods: products,
