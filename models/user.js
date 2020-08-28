@@ -16,6 +16,22 @@ const userSchema = new Schema({
       {
         productId: {
           type: Schema.Types.ObjectID,
+          ref: 'Product',
+          required: true,
+        },
+        quantity: {
+          type: Number,
+          required: true,
+        },
+      },
+    ],
+  },
+  order: {
+    items: [
+      {
+        productId: {
+          type: Schema.Types.ObjectID,
+          ref: 'Product',
           required: true,
         },
         quantity: {
@@ -26,6 +42,70 @@ const userSchema = new Schema({
     ],
   },
 });
+
+userSchema.methods.addToCart = function (product) {
+  const cartProductIndex = this.cart.items.length
+    ? this.cart.items.findIndex((cp) => {
+        return cp.productId.toString() === product._id.toString();
+      })
+    : -1;
+  let newQuantity = 1;
+  const updatedCartItems = [...this.cart.items];
+
+  if (cartProductIndex >= 0) {
+    newQuantity = this.cart.items[cartProductIndex].quantity + 1;
+    updatedCartItems[cartProductIndex].quantity = newQuantity;
+  } else {
+    updatedCartItems.push({
+      productId: product._id,
+      quantity: newQuantity,
+    });
+  }
+
+  const updatedCart = {
+    items: updatedCartItems,
+  };
+  this.cart = updatedCart;
+  return this.save();
+};
+
+userSchema.methods.removeFromCart = function (productId) {
+  const updatedCartItems = this.cart.items.filter((item) => {
+    return item.productId.toString() !== productId.toString();
+  });
+
+  this.cart.items = updatedCartItems;
+  return this.save();
+};
+
+userSchema.methods.clearCart = function () {
+  this.cart = { items: [] };
+  this.save();
+};
+
+//   addOrder() {
+//     const db = getDb();
+//     return this.getCart()
+//       .then((products) => {
+//         const order = {
+//           items: products,
+//           user: {
+//             _id: new ObjectID(this._id),
+//             name: this.name,
+//           },
+//         };
+//         return db.collection('orders').insertOne(order); //add all products that are in  the cart
+//       })
+//       .then(() => {
+//         this.cart = { items: [] }; //clear cart in code
+//         return db //clear in database
+//           .collection('users')
+//           .updateOne(
+//             { _id: new ObjectID(this._id) },
+//             { $set: { cart: { items: [] } } },
+//           );
+//       });
+//   }
 
 module.exports = mongoose.model('User', userSchema);
 

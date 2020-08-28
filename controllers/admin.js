@@ -15,13 +15,19 @@ exports.postAddProduct = (req, res, next) => {
   const imageUrl = req.body.imageUrl;
   const price = req.body.price;
   const description = req.body.description;
-  const product = new Product({ title, price, description, imageUrl });
+  const product = new Product({
+    title,
+    price,
+    description,
+    imageUrl,
+    userId: req.user, //the same as = req.user._id for mongoose
+  });
   product
     .save() //mongoose create save method by itself
     .then(() => res.redirect('/admin/products'))
     .catch((err) => console.log(err));
 };
-//
+
 exports.getEditProduct = (req, res, next) => {
   const editMode = req.query.edit;
   if (!editMode) {
@@ -66,6 +72,9 @@ exports.postEditProduct = (req, res, next) => {
 
 exports.getProducts = (req, res, next) => {
   Product.find()
+    // .select('title price -_id') //show which fields should be retrieved from the db
+    //-_id - exclude id
+    // .populate('userId', 'name') //mongoose will populate all the details, also can add user.userId
     .then((products) =>
       res.render('admin/products', {
         prods: products,
