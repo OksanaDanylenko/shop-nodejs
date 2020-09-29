@@ -168,11 +168,9 @@ exports.postReset = (req, res, next) => {
 };
 
 exports.getNewPassword = (req, res, next) => {
-  const token = req.param.token;
-  User.findOne({
-    resetToken: token,
-    resetTokenExpiration: { $gt: Date.now() },
-  })
+  const token = req.params.token;
+  console.log('token', token);
+  User.findOne({ resetToken: token, resetTokenExpiration: { $gt: Date.now() } })
     .then((user) => {
       let message = req.flash('error');
       if (message.length > 0) {
@@ -187,7 +185,9 @@ exports.getNewPassword = (req, res, next) => {
         userId: user._id.toString(),
       });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      console.log(err);
+    });
 };
 
 exports.postNewPassword = (req, res, next) => {
@@ -198,7 +198,7 @@ exports.postNewPassword = (req, res, next) => {
 
   User.findOne({
     resetToken: passwordToken,
-    resetTokenExparation: { $gt: Date.now(), _id: userId },
+    resetTokenExpiration: { $gt: Date.now(), _id: userId },
   })
     .then((user) => {
       resetUser = user;
