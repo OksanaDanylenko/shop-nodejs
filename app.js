@@ -47,6 +47,7 @@ app.use((req, res, next) => {
 
   User.findById(req.session.user._id)
     .then((user) => {
+      console.log('user', user);
       req.user = user; //store mogoose methods for user
       next();
     })
@@ -54,7 +55,7 @@ app.use((req, res, next) => {
 });
 
 app.use((req, res, next) => {
-  res.locals.isAuthenticated = req.session.isLoggenIn;
+  res.locals.isAuthenticated = req.session.isLoggedIn;
   res.locals.csrfToken = req.csrfToken();
   next();
 });
