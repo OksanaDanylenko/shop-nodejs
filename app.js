@@ -47,7 +47,6 @@ app.use((req, res, next) => {
 
   User.findById(req.session.user._id)
     .then((user) => {
-      console.log('user', user);
       req.user = user; //store mogoose methods for user
       next();
     })
