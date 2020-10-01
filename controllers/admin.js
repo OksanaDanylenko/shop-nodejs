@@ -9,7 +9,7 @@ exports.getAddProduct = (req, res, next) => {
     editing: false,
     hasError: false,
     errorMessage: null,
-    validationErros: [],
+    validationErrors: [],
   });
 };
 
