@@ -24,15 +24,15 @@ const fileStorage = multer.diskStorage({
     cb(null, 'images');
   }, //first argument - error},
   filename: (req, file, cb) => {
-    cb(null, new Date().toISOString() + ' ' + file.originalname);
+    cb(null, new Date().toISOString() + '-' + file.originalname);
   },
 });
 
 const fileFilter = (req, file, cb) => {
   if (
-    file.mimeType === 'image/png' ||
-    file.mimeType === 'image/jpg' ||
-    file.mimeType === 'image/jpeg'
+    file.mimetype === 'image/png' ||
+    file.mimetype === 'image/jpg' ||
+    file.mimetype === 'image/jpeg'
   ) {
     cb(null, true);
   } else {
@@ -53,6 +53,8 @@ app.use(
 );
 // eslint-disable-next-line no-undef
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/images', express.static(path.join(__dirname, 'images')));
+
 app.use(
   session({
     secret: 'my secret',
@@ -64,6 +66,12 @@ app.use(
 app.use(csrfProtection);
 app.use(flash());
 //resave - session will not be saved on every request that is one
+
+app.use((req, res, next) => {
+  res.locals.isAuthenticated = req.session.isLoggedIn;
+  res.locals.csrfToken = req.csrfToken();
+  next();
+});
 
 app.use((req, res, next) => {
   if (!req.session.user) {
@@ -79,12 +87,6 @@ app.use((req, res, next) => {
       next();
     })
     .catch((err) => {}); // this code runs for upcoming requests only
-});
-
-app.use((req, res, next) => {
-  res.locals.isAuthenticated = req.session.isLoggedIn;
-  res.locals.csrfToken = req.csrfToken();
-  next();
 });
 
 app.use('/admin', adminRoutes);
