@@ -21,7 +21,7 @@
           orderBtn.addEventListener('click', ()=> {
             stripe.redirectToCheckout({
 
-              sessionId: '<%= console.log('sessionId', sessionId) || sessionId %>'
+              sessionId: '<%= sessionId %>'
             })
           })
         </script>

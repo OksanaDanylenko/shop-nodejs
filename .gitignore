@@ -65,3 +65,6 @@ bower_components
 
 ###Task related folders
 jsapiupload
+
+server.cert
+server.key
